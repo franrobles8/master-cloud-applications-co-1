@@ -11,18 +11,27 @@ DOCKER_HUB_USER=franrobles8
 # Server service
 ################
 
-SERVER_SERVICE=eoloplants_server
-SERVER_SERVICE_REPO="${DOCKER_HUB_USER}/${SERVER_SERVICE}"
+service_name=eoloplants_server
+service_repo="${DOCKER_HUB_USER}/${service_name}"
 
-echo -e "${GREEN}Building service image: [server]${ENDCOLOR}"
-docker build -t $SERVER_SERVICE_REPO ./server
+echo -e "${GREEN}Building service image: [${service_name}]${ENDCOLOR}"
+docker build -t $service_repo ./server && echo -e "Image built" || echo -e echo -e "${RED}Error trying to build image${ENDCOLOR}"
 
-echo -e "${GREEN}Pushing image: [server]${ENDCOLOR}"
-docker push $SERVER_SERVICE_REPO
+echo -e "${GREEN}Pushing image: [${service_repo}]${ENDCOLOR}"
+docker push $service_repo && echo -e "Image pushed" || echo -e echo -e "${RED}Error trying to push image${ENDCOLOR}"
 
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Check that you have logged in to a docker repo. Try \"docker login\"${ENDCOLOR}"
-    exit 1
-fi
+#################
+# Weather service
+#################
+
+service_name=eoloplants_weatherservice
+service_repo="${DOCKER_HUB_USER}/${service_name}"
+
+echo -e "${GREEN}Building service image: [${service_name}]${ENDCOLOR}"
+pack build ${DOCKER_HUB_USER}/${service_name} --path ./weatherservice --builder gcr.io/buildpacks/builder:v1 \
+    && echo -e "Image built" || echo -e echo -e "${RED}Error trying to build image${ENDCOLOR}"
+
+echo -e "${GREEN}Pushing image: [${service_repo}]${ENDCOLOR}"
+docker push $service_repo && echo -e "Image pushed" || echo -e echo -e "${RED}Error trying to push image${ENDCOLOR}"
 
 echo -e "${BLUE}Images have been generated and pushed to the docker registry${ENDCOLOR}"
