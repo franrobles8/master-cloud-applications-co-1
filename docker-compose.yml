@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - MYSQL_DATABASE=eoloplantsDB
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_SERVICE_NAME=eoloplantsDB
+      - RABBIT_SERVICE_NAME=rabbitQueue
+    depends_on:
+      - eoloplantsDB
+      - rabbitQueue
+    # command: ["./wait-for-it.sh", "eoloplantsDB:3306", "--timeout=30", "--", "node", "src/server.js"]
+    command: >
+      bash -c "./wait-for-it.sh eoloplantsDB:3306 --timeout=30 
+      && ./wait-for-it.sh rabbitQueue:5672 --timeout=30 -- node src/server.js"
+  
+  eoloplantsDB:
+    image: mysql:8.0.23
+    environment:
+      - MYSQL_DATABASE=eoloplantsDB
+      - MYSQL_ROOT_PASSWORD=password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/eoloplantsDB:/data/eoloplantsDB
+
+  rabbitQueue:
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672
+        - 15672:15672

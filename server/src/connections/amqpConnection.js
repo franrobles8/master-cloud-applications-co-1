@@ -1,5 +1,4 @@
 import { connect } from 'amqplib';
-import config from 'config';
 import DebugLib from 'debug';
 import configHandler from '../clients/plannerNotificationHandler.js';
 
@@ -9,7 +8,8 @@ export let amqpChannel;
 
 export async function connectAmqp() {
   
-  const URL = config.get('amqp.url');
+  const HOST = process.env.RABBIT_SERVICE_NAME || 'localhost';
+  const URL = `amqp://guest:guest@${HOST}`;
 
   const conn = await connect(URL);
   amqpChannel = await conn.createChannel();
