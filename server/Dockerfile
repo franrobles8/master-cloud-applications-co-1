@@ -1,7 +1,7 @@
 #######################################
 # Base image to compile the application
 #######################################
-FROM node:14.16.0-alpine3.12 as builder
+FROM node:lts-alpine as builder
 
 # Define the working directory inside the container
 WORKDIR /usr/app
@@ -15,13 +15,17 @@ RUN npm install --only=production
 ######################################
 # Base image for application container
 ######################################
-FROM node:14.16.0-alpine3.12
+FROM node:lts
 
 # Specify Env variable to execute dependencies in production mode
 ENV NODE_ENV production
 
 # Define the working directory
 WORKDIR /usr/app
+
+# Download the script wait-for-it.sh
+RUN curl -LJO https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    && chmod +x /usr/app/wait-for-it.sh
 
 # Copy node_modules with all the installed dependencies from the compilation image
 COPY --from=builder /usr/app/node_modules /usr/app/node_modules
