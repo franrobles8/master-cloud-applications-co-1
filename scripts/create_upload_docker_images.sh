@@ -20,7 +20,7 @@ docker build -t $SERVER_SERVICE_REPO ./server
 echo -e "${GREEN}Pushing image: [server]${ENDCOLOR}"
 docker push $SERVER_SERVICE_REPO
 
-if [-z $?]; then
+if [ $? -ne 0 ]; then
     echo -e "${RED}Check that you have logged in to a docker repo. Try \"docker login\"${ENDCOLOR}"
     exit 1
 fi
