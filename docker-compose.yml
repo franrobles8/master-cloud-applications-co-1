@@ -1,9 +1,7 @@
 version: "3.9"
 services:
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: franrobles8/eoloplants_server
     ports:
       - 3000:3000
     environment:
@@ -15,7 +13,6 @@ services:
     depends_on:
       - eoloplantsDB
       - rabbitQueue
-    # command: ["./wait-for-it.sh", "eoloplantsDB:3306", "--timeout=30", "--", "node", "src/server.js"]
     command: >
       bash -c "./wait-for-it.sh eoloplantsDB:3306 --timeout=30 
       && ./wait-for-it.sh rabbitQueue:5672 --timeout=30 -- node src/server.js"
