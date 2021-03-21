@@ -21,6 +21,7 @@
 		<io.grpc.version>1.25.0</io.grpc.version>
 		<os-maven-plugin.version>1.6.2</os-maven-plugin.version>
 		<protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+		<start-class>es.codeurjc.mastercloudapps.planner.Application</start-class>
 	</properties>
 
 	<dependencies>

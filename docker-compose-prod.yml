@@ -43,3 +43,15 @@ services:
       - 9090:9090
     command: >
       bash -c "node src/server.js"
+    environment: 
+      - WEATHER_SERVICE_NAME=weatherService
+
+  # Wheatherservice services
+  plannerService:
+    image: franrobles8/eoloplants_planner
+    ports:
+      - 8080:8080
+    command: >
+      bash -c "java -jar planner-0.0.1-SNAPSHOT.jar --grpc.client.weatherServer.address=weatherService --rabbitmq.host=rabbitQueue"
+    depends_on: 
+      - rabbitQueue
