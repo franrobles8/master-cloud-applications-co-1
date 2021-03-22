@@ -31,9 +31,9 @@ WORKDIR /usr/app/
 COPY --from=builder /usr/app/target/*.jar /usr/app/
 
 # Specify the exposed port for the container
-EXPOSE 8080
+EXPOSE 8081
 
-# Executed command when doing 'docke run ...'
+# Executed command when doing 'docker run ...'
 CMD [ "java", "-jar", "planner-0.0.1-SNAPSHOT.jar" ]
 
 

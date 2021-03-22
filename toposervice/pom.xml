@@ -29,6 +29,11 @@
             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
         </dependency>
 
+        <dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+
     </dependencies>
 
     <build>
@@ -36,6 +41,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.8.0</version>
+                <configuration>
+                    <container>
+                        <args>
+                            <arg>--spring.config.location=/app/resources/application.properties</arg>
+                        </args>
+                    </container>
+                </configuration>
             </plugin>
         </plugins>
     </build>

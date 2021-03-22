@@ -1,8 +1,6 @@
 version: "3.9"
 services:
 
-# Server services
-
   server:
     image: franrobles8/eoloplants_server
     ports:
@@ -17,8 +15,8 @@ services:
       - eoloplantsDB
       - rabbitQueue
     command: >
-      bash -c "./wait-for-it.sh eoloplantsDB:3306 --timeout=30 
-      && ./wait-for-it.sh rabbitQueue:5672 --timeout=30 -- node src/server.js"
+      bash -c "./wait-for-it.sh eoloplantsDB:3306 --timeout=0 
+      && ./wait-for-it.sh rabbitQueue:5672 --timeout=0 -- node src/server.js"
   
   eoloplantsDB:
     image: mysql:8.0.23
@@ -33,25 +31,48 @@ services:
   rabbitQueue:
     image: rabbitmq:3-management-alpine
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
 
-  # Wheatherservice services
   weatherService:
     image: franrobles8/eoloplants_weatherservice
     ports:
       - 9090:9090
-    command: >
-      bash -c "node src/server.js"
     environment: 
       - WEATHER_SERVICE_NAME=weatherService
 
-  # Wheatherservice services
   plannerService:
     image: franrobles8/eoloplants_planner
+    environment:
+      - TOPOSERVICE_HOST=topoService
+      - TOPOSERVICE_PORT=8080
+      - GRPC_HOST=weatherService
+      - GRPC_PORT=9090
+      - RABBIT_HOST=rabbitQueue
+      - RABBIT_USER=guest
+      - RABBIT_PASS=guest
+      - RABBIT_PORT=5672
     ports:
-      - 8080:8080
-    command: >
-      bash -c "java -jar planner-0.0.1-SNAPSHOT.jar --grpc.client.weatherServer.address=weatherService --rabbitmq.host=rabbitQueue"
+      - 8081:8081
     depends_on: 
       - rabbitQueue
+      - topoService
+      - weatherService
+
+  topoDB:
+    image: mongo:4.4
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/topoDB:/data/topoDB
+    command: ["--bind_ip=0.0.0.0"]
+
+  topoService:
+    image: franrobles8/eoloplants_toposervice
+    environment: 
+      - MONGO_HOST=topoDB
+      - SPRING_CONFIG_LOCATION=file:/app/resources/application.properties
+    ports:
+      - 8080:8080
+    depends_on: 
+      - topoDB

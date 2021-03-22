@@ -17,23 +17,17 @@ import org.springframework.retry.support.RetryTemplate;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.host:localhost}")
+    @Value("${spring.rabbitmq.host}")
     String hostname;
 
-    @Value("${rabbitmq.port:5672}")
+    @Value("${spring.rabbitmq.port}")
     int port;
 
-    @Value("${rabbitmq.username:guest}")
+    @Value("${spring.rabbitmq.username}")
     String userName;
 
-    @Value("${rabbitmq.password:guest}")
+    @Value("${spring.rabbitmq.password}")
     String password;
-
-    @Value("${rabbitmq.virtual-host:/}")
-    String virtualHost;
-
-    @Value("${rabbitmq.use-ssl:false}")
-    boolean useSSL;
 
     @Bean
     CachingConnectionFactory connectionFactory() {
@@ -42,15 +36,6 @@ public class RabbitMQConfig {
         cf.setPort(port);
         cf.setUsername(userName);
         cf.setPassword(password);
-        cf.setVirtualHost(virtualHost);
-        cf.setAutomaticRecoveryEnabled(false);
-        if (useSSL) {
-            try {
-                cf.useSslProtocol();
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         return new CachingConnectionFactory(cf);
     }

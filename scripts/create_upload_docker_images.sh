@@ -67,10 +67,27 @@ build_and_push_planner () {
 
 }
 
+build_and_push_toposervice () {
+
+    # Image generated and pushed with JIB
+
+    service_name=eoloplants_toposervice
+    service_repo="${DOCKER_HUB_USER}/${service_name}"
+
+    echo -e "${GREEN}Building and pushing service image: [${service_name}]${ENDCOLOR}"
+
+    pushd ./toposervice \
+        && mvn compile jib:build -Dimage="${service_repo}" \
+        && popd \
+        && str_image_pushed $service_repo || str_error_image_push $service_repo
+    
+}
+
 echo -e "${GREEN}Starting building and pushing images...${ENDCOLOR}"
 
 build_and_push_server
 build_and_push_weatherservice
 build_and_push_planner
+build_and_push_toposervice
 
 echo -e "${BLUE}Images have been generated and pushed to the docker registry${ENDCOLOR}"
