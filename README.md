@@ -1,33 +1,17 @@
 # EoloPlanner
 
-Este proyecto es una aplicación distribuida formada por diferentes servicios que se comunican entre sí usando API REST, gRPC y RabbitMQ. La aplicación ofrece un interfaz web que se comunica con el servidor con API REST y WebSockets. 
+## Needed
 
-Algunos servicios están implementados con Node.js/Express y otros con Java/Spring. Estas tecnologías deben estar instaladas en el host para poder construir y ejecutar los servicios. También se requiere Docker para ejecutar los servicios auxiliares (MySQL, MongoDB y RabbitMQ).
+In order to create some of the images for the different services of this application, you will need to install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).
 
-Para la construcción de los servicios y su ejecución, así como la ejecución de los servicios auxiliares requeridos se usan scripts implementados en Node.js. Posiblemente no sea el lenguaje de scripting más utilizado para este caso de uso, pero en este caso concreto facilita la interoperabilidad en varios SOs y es sencillo.
+## Deployment
 
-Esta solución está basada en el trabajo entregado por el alumno Miguel García Sanguino.
+To deploy the app, follow the next steps:
 
-## Iniciar servicios auxiliares: MongoDB, MySQL y RabbitMQ
+1. First, we need to create the images for the different services. We have prepared a script to create the images in different ways (Docker with cached dependencies, Buildpacks, etc). To generate the images and push them to a repository, you can edit the file `scripts/create_upload_docker_images.sh` and modify the variable `DOCKER_HUB_USER=example_user` with the one you have configured (using `docker login` command).
 
-Los servicios auxiliares se ejecutan con la tecnología de contenedores Docker usando el siguiente comando:
+2. From the root folder, execute `./scripts/create_upload_docker_images.sh`. After all the process of generating and pushing the images has finished, you can check your docker registry to see that you have uploaded the images **eoloplants_toposervice**, **eoloplants_planner**, **eoloplants_weatherservice** and **eoloplants_server**.
 
-```
-$ node exec_aux_services.js
-```
+3. In order to start the application, we need to run the containers with the images we pushed in the above steps. We can do that by running `docker-compose -f ./docker-compose-prod.yml up` from the root folder. It will take some seconds/minutes for the containers to be ready and well configured.
 
-## Construir servicios
-
-Descarga las dependencias y construye los proyectos. En proyectos Java usa Maven. En proyectos Node usa NPM:
-
-```
-$ node build.js
-```
-
-## Ejecutar servicios
-
-Ejecuta los servicios. En proyectos Java usa Maven. En proyectos Node usa esta tecnología directamente:
-
-```
-$ node exec.js
-```
+4. To play with the application, you can navigate to [http://localhost:3000](http://localhost:3000) and use some of the cities that are being shown to check that the different services are well connected and so, the progress bar is being updated for the cities.
