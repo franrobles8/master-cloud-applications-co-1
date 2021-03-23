@@ -5,12 +5,8 @@ services:
     image: franrobles8/eoloplants_server
     ports:
       - 3000:3000
-    environment:
-      - MYSQL_DATABASE=eoloplantsDB
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=password
-      - MYSQL_SERVICE_NAME=eoloplantsDB
-      - RABBIT_SERVICE_NAME=rabbitQueue
+    env_file:
+      - ./config/prod/.env.server
     depends_on:
       - eoloplantsDB
       - rabbitQueue
@@ -20,9 +16,8 @@ services:
   
   eoloplantsDB:
     image: mysql:8.0.23
-    environment:
-      - MYSQL_DATABASE=eoloplantsDB
-      - MYSQL_ROOT_PASSWORD=password
+    env_file:
+      - ./config/prod/.env.eoloplantsdb
     ports:
       - 3306:3306
     volumes:
@@ -36,22 +31,15 @@ services:
 
   weatherService:
     image: franrobles8/eoloplants_weatherservice
+    env_file:
+      - ./config/prod/.env.weatherservice
     ports:
       - 9090:9090
-    environment: 
-      - WEATHER_SERVICE_NAME=weatherService
 
   plannerService:
     image: franrobles8/eoloplants_planner
-    environment:
-      - TOPOSERVICE_HOST=topoService
-      - TOPOSERVICE_PORT=8080
-      - GRPC_HOST=weatherService
-      - GRPC_PORT=9090
-      - RABBIT_HOST=rabbitQueue
-      - RABBIT_USER=guest
-      - RABBIT_PASS=guest
-      - RABBIT_PORT=5672
+    env_file:
+      - ./config/prod/.env.planner
     ports:
       - 8081:8081
     depends_on: 
@@ -65,13 +53,11 @@ services:
       - 27017:27017
     volumes:
       - ./data/topoDB:/data/topoDB
-    command: ["--bind_ip=0.0.0.0"]
 
   topoService:
     image: franrobles8/eoloplants_toposervice
-    environment: 
-      - MONGO_HOST=topoDB
-      - SPRING_CONFIG_LOCATION=file:/app/resources/application.properties
+    env_file:
+      - ./config/prod/.env.toposervice
     ports:
       - 8080:8080
     depends_on: 
